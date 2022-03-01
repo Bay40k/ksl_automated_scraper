@@ -1,177 +1,71 @@
+from __future__ import annotations
+
+import asyncio
+from dataclasses import dataclass
+from typing import List
+
+import bs4.element
 import requests
-from typing import Union
-from datetime import datetime
-
-"""
-Allowed values for various filters (case sensitive):
-sellerType:   "For Sale By Owner", "Dealership"
-newUsed:      "Used", "New", "Certified"
-transmission: "Automatic", "Manual", "CVT", "Automanual"
-fuel:         "Compressed Natural Gas", "Diesel", "Electric", "Flex Fuel", "Gasoline", "Hybrid"
-drive:        "2-Wheel Drive", "4-Wheel Drive", "AWD", "FWD", "RWD"
-titleType:    "Clean Title", "Dismantled Title", "Not Specified", "Rebuilt/Reconstructed Title", "Salvage Title"
-"""
+from bs4 import BeautifulSoup
 
 
-def semicolonize(input_list: Union[list, str]) -> str:
-    """
-    Joins lists with semicolons which is what the API requires for multiple parameters
-    """
-    if type(input_list) is str:
-        return input_list
-    return ";".join(input_list)
+USER_AGENT = (
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:97.0) Gecko/20100101 Firefox/97.0"
+)
+BASE_URL = "https://classifieds.ksl.com"
 
 
-def get_makes_models_trims(make: str = None, model: str = None) -> list:
-    """
-    Function to return all available makes, models, and trims
-    """
-    headers = {"Content-Type": "application/json"}
-    data = {"endpoint": "/classifieds/cars/category/getTrimsForMakeModel"}
-    page = requests.post(f"https://cars.ksl.com/nextjs-api/proxy", headers=headers, json=data)
-    cars = page.json()["data"]
+@dataclass
+class SearchResult:
+    title: str
+    price: str
+    location: str
+    link: str
+    text: str
 
-    # return models if make defined
-    if make and not model:
-        models = list()
-        for m in cars[make]:
-            models.append(m)
-        return models
+    def __init__(self, html: bs4.element.Tag):
+        self.html = html
+        self.link = BASE_URL + html.a["href"]
+        self.text = html.text.strip()
 
-    # return trims if make and model defined
-    if make and model:
-        trims = list()
-        for t in cars[make][model]:
-            trims.append(t)
-        return trims
-
-    # return all makes if nothing defined
-    makes = list()
-    for m in cars:
-        makes.append(m)
-    return makes
+        self.text_list = list(filter(None, self.text.split("\n")))
+        self.title = self.text_list[0]
+        self.price = self.text_list[1]
+        self.location = self.text_list[2]
 
 
-def ksl_auto_search(keyword: str = None, filters: dict = None, page: int = 1) -> dict:
-    """
-    Returns dictionary of car listings per given keyword/filters
-    """
-    if filters is None:
-        filters = {}
-    if keyword:
-        filters["keyword"] = keyword
-
-    filter_array = list()
-
-    possible_filters = [
-        "sellerType",
-        "newUsed",
-        "make",
-        "model",
-        "priceTo",
-        "priceFrom",
-        "mileageFrom",
-        "mileageTo",
-        "trim",
-        "transmission",
-        "keyword",
-        "fuel",
-        "drive",
-        "titleType"
-    ]
-
-    # add filter to filter_array if it exists
-    for f in possible_filters:
-        if f in filters.keys():
-            filter_value = semicolonize(filters[f])
-            filter_array.extend([f, filter_value])
-
-    headers = {"Content-Type": "application/json"}
-    data = {
-        "endpoint": "/classifieds/cars/search/searchByUrlParams",
-        "options": {
-            "body": ["page", f"{page}"]
-        }
+async def get_search_results(
+    keyword: str,
+    price_from: int | None = None,
+    price_to: int | None = None,
+    page: int | None = None,
+) -> str:
+    headers = {
+        "Accept": "text/html",
+        "User-Agent": USER_AGENT,
     }
-
-    # add filters to data
-    data["options"]["body"].extend(filter_array)
-    page = requests.post(f"https://cars.ksl.com/nextjs-api/proxy", headers=headers, json=data)
-    car_listings = page.json()["data"]["items"]
-
-    all_listings = dict()
-    for i, listing in enumerate(car_listings):
-        year = listing["makeYear"]
-        make = listing["make"]
-        model = listing["model"]
-
-        try:
-            trim = listing["trim"]
-        except KeyError:
-            trim = None
-
-        title = f"{year} {make} {model}"
-        if trim:
-            title += f" {trim}"
-
-        try:
-            transmission = listing["transmission"]
-        except KeyError:
-            transmission = None
-
-        try:
-            fuel = listing["fuel"]
-        except KeyError:
-            fuel = None
-
-        try:
-            title_type = listing["titleType"]
-        except KeyError:
-            title_type = None
-
-        price        = f"${listing['price']}"
-        miles        = listing["mileage"]
-        location     = f"{listing['city']}, {listing['state']}"
-        vin          = listing["vin"]
-        body_type    = listing["body"]
-        link         = f"https://cars.ksl.com/listing/{listing['id']}"
-        seller_type  = listing["sellerType"]
-        new_or_used  = listing["newUsed"]
-
-        timestamp = listing["displayTime"]
-        time_created = datetime.utcfromtimestamp(timestamp).strftime('%Y-%m-%d %H:%M:%S')
+    url_string = f"{BASE_URL}/search/keyword/{keyword}"
+    if price_from:
+        url_string += f"/priceFrom/{price_from}"
+    if price_to:
+        url_string += f"/priceTo/{price_to}"
+    if page and page > 0:
+        url_string += f"/page/{page + 1}"
+    my_request = requests.get(url_string, headers=headers)
+    return my_request.text
 
 
-        listing_dict = {
-            "listing_title": title,
-            "year": year,
-            "make": make,
-            "model": model,
-            "trim": trim,
-            "price": price,
-            "miles": miles,
-            "new_or_used": new_or_used,
-            "location": location,
-            "vin": vin,
-            "body_type": body_type,
-            "fuel_type": fuel,
-            "transmission": transmission,
-            "link": link,
-            "seller_type": seller_type,
-            "title_type": title_type,
-            "time_created_utc": time_created,
-            "unix_timestamp": timestamp
-        }
-        all_listings[i] = listing_dict
+async def parse_search_results(search_results_html: str) -> List[SearchResult]:
+    soup = BeautifulSoup(search_results_html, "html.parser")
+    all_listings_tags = soup.find_all(class_="listing-item featured")
+    return [SearchResult(listing) for listing in all_listings_tags]
 
-    if all_listings:
-        return all_listings
-    return {"error": "No listings found"}
+
+async def main():
+    search_results_html = await get_search_results("ps5", 100, 600)
+    search_results = await parse_search_results(search_results_html)
+    print(search_results)
 
 
 if __name__ == "__main__":
-    # Example code
-    import json
-
-    listings = ksl_auto_search(keyword="Honda civic", page=1)
-    print(json.dumps(listings, indent=4))
+    asyncio.run(main())
