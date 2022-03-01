@@ -1,11 +1,22 @@
 import smtplib
-from config import config_options
 
-server = smtplib.SMTP_SSL(config_options["mail_server"], config_options["mail_port"])
 
-# Next, log in to the server
-server.login(config_options["email_from"], config_options["email_password"])
+async def send_email(
+    mail_server: str,
+    mail_port: int,
+    email_from: str,
+    email_password: str,
+    email_to: str,
+    subject: str,
+    body: str,
+):
+    server = smtplib.SMTP_SSL(mail_server, mail_port)
 
-# Send the email
-msg = "Subject: test\n\ntest" # The newlines separate the message from the headers
-server.sendmail(config_options["email_from"], config_options["email_to"], msg)
+    # Next, log in to the server
+    server.login(email_from, email_password)
+
+    # Send the email
+    msg = f"Subject: {subject}\n\n{body}".encode(
+        "UTF-8"
+    )  # The newlines separate the message from the headers
+    server.sendmail(email_from, email_to, msg)

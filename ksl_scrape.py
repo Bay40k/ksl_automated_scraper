@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import asyncio
 from dataclasses import dataclass
 from typing import List
 
@@ -8,6 +7,9 @@ import bs4.element
 import requests
 from bs4 import BeautifulSoup
 
+
+# TODO:
+# - Keep track of already sent results
 
 USER_AGENT = (
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:97.0) Gecko/20100101 Firefox/97.0"
@@ -59,13 +61,3 @@ async def parse_search_results(search_results_html: str) -> List[SearchResult]:
     soup = BeautifulSoup(search_results_html, "html.parser")
     all_listings_tags = soup.find_all(class_="listing-item featured")
     return [SearchResult(listing) for listing in all_listings_tags]
-
-
-async def main():
-    search_results_html = await get_search_results("ps5", 100, 600)
-    search_results = await parse_search_results(search_results_html)
-    print(search_results)
-
-
-if __name__ == "__main__":
-    asyncio.run(main())
