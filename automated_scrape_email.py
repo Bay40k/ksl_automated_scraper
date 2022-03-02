@@ -5,9 +5,9 @@ import ksl_scrape
 from send_email import send_email
 from config import config_options
 
-KEYWORD = config_options["keyword"]
-PRICE_FROM = config_options["price_from"]
-PRICE_TO = config_options["price_to"]
+KEYWORD = config_options["settings"]["keyword"]
+PRICE_FROM = config_options["settings"]["price_from"]
+PRICE_TO = config_options["settings"]["price_to"]
 
 
 async def main():
@@ -21,11 +21,11 @@ async def main():
     print(search_results_string)
     subject = f"New KSL Search Results for '{KEYWORD}' | {datetime.now()}"
     await send_email(
-        config_options["mail_server"],
-        config_options["mail_port"],
-        config_options["email_from"],
-        config_options["email_password"],
-        config_options["email_to"],
+        config_options["email"]["mail_server"],
+        config_options["email"]["mail_port"],
+        config_options["email"]["email_from"],
+        config_options["email"]["email_password"],
+        config_options["email"]["email_to"],
         subject,
         search_results_string,
     )

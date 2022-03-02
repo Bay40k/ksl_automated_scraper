@@ -7,11 +7,13 @@ import ksl_scrape
 from config import config_options
 
 client = discord.Client()
-KEYWORD = config_options["keyword"]
-PRICE_FROM = config_options["price_from"]
-PRICE_TO = config_options["price_to"]
-TOKEN = config_options["discord_token"]
-USER_ID = config_options["discord_user_id"]
+
+KEYWORD = config_options["settings"]["keyword"]
+PRICE_FROM = config_options["settings"]["price_from"]
+PRICE_TO = config_options["settings"]["price_to"]
+
+TOKEN = config_options["discord"]["discord_token"]
+USER_ID = config_options["discord"]["discord_user_id"]
 
 
 async def do_scrape():

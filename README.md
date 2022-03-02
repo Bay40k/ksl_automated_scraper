@@ -2,14 +2,14 @@
 
 Automatically send an email or Discord message including KSL Classifieds search results for a specified query, matching a price range.
 
-This only works on the Classifieds section. For https://cars.ksl.com, see: https://github.com/Bay40k/ksl_cars_scraper_api
+This only works on the Classifieds section. For https://cars.ksl.com, see: [ksl_cars_scraper](https://github.com/Bay40k/ksl_cars_scraper_api)
 
 
 ### Dependencies:
 - BeautifulSoup4
 - Requests
 
-## Usage:
+## Usage
 First, make sure to rename `config_EXAMPLE.py` to `config.py` after configuring your settings.
 
 Then, to run the scrape and send the results to your configured email:
@@ -33,7 +33,7 @@ https://docs.pycord.dev/en/master/discord.html
 
 4. Simply run/schedule `python automated_scrape_discord`.
 
-## Scheduling:
+## Scheduling
 
 Cron job which runs scrape every 12 hours
 ```bash
