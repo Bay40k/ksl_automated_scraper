@@ -30,6 +30,10 @@ Or, if you have configured Discord settings:
 python automated_scrape_discord
 ```
 
+## Example Output
+![censored_example_small](https://user-images.githubusercontent.com/8551516/156336122-a68c2b10-013f-4d7a-b2fb-6af9096079a5.jpg)
+
+
 ## Discord
 1. To use Discord, you must first create a bot account and generate an OAuth URL:
 https://docs.pycord.dev/en/master/discord.html
