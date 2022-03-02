@@ -10,4 +10,8 @@ config_options = {
     "keyword": "ps5",
     "price_from": 100,
     "price_to": 600,
+    # Discord bot token if using Discord
+    "discord_token": "",
+    # Your Discord user ID (for sending the notification)
+    "discord_user_id": 0,
 }
