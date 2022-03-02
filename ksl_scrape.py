@@ -17,7 +17,7 @@ ALREADY_SENT_DB = "already_sent.db"
 
 async def has_link_been_sent(link_to_result: str) -> bool:
     """
-    Indicates whether the specified search result has already been sent
+    Indicates whether the specified link exists in DB, and therefore if that listing has already been sent
 
     :param link_to_result: link to KSL search result
     :return: Boolean indicating whether the result has already been sent or not
@@ -50,11 +50,17 @@ class KSLSearchResult:
     text: str
 
     def __init__(self, html: bs4.element.Tag):
+        """
+        Turns search results into a KSLSearchResult object
+
+        :param html: BS4 HTML element tag with class "listing-item featured"
+        """
         self.html = html
         self.link = BASE_URL + html.a["href"]
         self.text = html.text.strip()
-
-        self.text_list = list(filter(None, self.text.split("\n")))
+        self.text_list = list(
+            filter(None, self.text.split("\n"))
+        )  # Remove empty elements (empty lines) after splitting by newline
         self.title = self.text_list[0]
         self.price = self.text_list[1]
         self.location = self.text_list[2]
