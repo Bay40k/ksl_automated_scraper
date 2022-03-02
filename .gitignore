@@ -2,4 +2,4 @@
 geckodriver.log
 __pycache__/
 config.py
-*.db
+already_sent.db
