@@ -2,6 +2,8 @@
 
 Automatically send an email or Discord message including KSL Classifieds search results for a specified query, matching a price range.
 
+Already sent links will be kept track of via an SQLite database. If no new results are found, no email/message/notification is sent.
+
 This only works on the Classifieds section. For https://cars.ksl.com, see: [ksl_cars_scraper](https://github.com/Bay40k/ksl_cars_scraper_api)
 
 
