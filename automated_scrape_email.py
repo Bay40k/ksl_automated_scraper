@@ -15,6 +15,9 @@ async def main():
         KEYWORD, PRICE_FROM, PRICE_TO
     )
     search_results = await ksl_scrape.parse_search_results(search_results_html)
+    if not search_results:
+        print("No new results were found.")
+        return None
     search_results_string = "\n\n=========================\n\n".join(
         [f"{result.link}\n{result.text}" for result in search_results]
     )

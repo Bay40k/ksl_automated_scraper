@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import asyncio
 from dataclasses import dataclass
 from typing import List
 
@@ -16,9 +15,9 @@ BASE_URL = "https://classifieds.ksl.com"
 ALREADY_SENT_DB = "already_sent.db"
 
 
-async def is_result_sent(link_to_result: str) -> bool:
+async def has_link_been_sent(link_to_result: str) -> bool:
     """
-    Indicates whether the specified result has already been sent
+    Indicates whether the specified search result has already been sent
 
     :param link_to_result: link to KSL search result
     :return: Boolean indicating whether the result has already been sent or not
@@ -33,13 +32,17 @@ async def is_result_sent(link_to_result: str) -> bool:
                     f"INSERT INTO links(link) VALUES ('{link_to_result}');"
                 )
                 await db.commit()
-                print(f"Added link '{link_to_result}' to db {ALREADY_SENT_DB}")
+                print(f"Added link '{link_to_result}' to db '{ALREADY_SENT_DB}'")
                 return False
             return True
 
 
 @dataclass
-class SearchResult:
+class KSLSearchResult:
+    """
+    KSLSearchResult object
+    """
+
     title: str
     price: str
     location: str
@@ -63,6 +66,15 @@ async def get_search_results(
     price_to: int | None = None,
     page: int | None = None,
 ) -> str:
+    """
+    Obtain HTML page of KSL classifieds search results.
+
+    :param keyword: Keyword to search for
+    :param price_from: Lower bound of price
+    :param price_to: Upper bound of price
+    :param page: Page of search results to retrieve
+    :return: String containing the HTML page of KSL classifieds search results
+    """
     headers = {
         "Accept": "text/html",
         "User-Agent": USER_AGENT,
@@ -78,11 +90,19 @@ async def get_search_results(
     return my_request.text
 
 
-async def parse_search_results(search_results_html: str) -> List[SearchResult]:
+async def parse_search_results(search_results_html: str) -> List[KSLSearchResult]:
+    """
+    Retrieves list of KSLSearchResult objects, from raw HTML search results.
+
+    :param search_results_html: Raw HTML string
+    :return: List of KSLSearchResult objects
+    """
     soup = BeautifulSoup(search_results_html, "html.parser")
     all_listings_tags = soup.find_all(class_="listing-item featured")
-    return [SearchResult(listing) for listing in all_listings_tags]
-
-
-if __name__ == "__main__":
-    asyncio.run(is_result_sent("blabla i crazy now"))
+    all_listings = [KSLSearchResult(listing) for listing in all_listings_tags]
+    unsent_listings = []
+    for listing in all_listings:
+        is_listing_sent = await has_link_been_sent(listing.link)
+        if not is_listing_sent:
+            unsent_listings.append(listing)
+    return unsent_listings
