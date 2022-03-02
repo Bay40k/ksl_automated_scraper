@@ -10,14 +10,19 @@ This only works on the Classifieds section. For https://cars.ksl.com, see: [ksl_
 ### Dependencies:
 - BeautifulSoup4
 - Requests
+- PyCord (discord2)
+- aiosqlite
 
 ## Usage
-First, make sure to rename `config_EXAMPLE.py` to `config.py` after configuring your settings.
+```
+git clone https://github.com/Bay40k/ksl_automated_scraper
+cd ksl_automated_scraper
+pip install -r requirements.txt
+```
+After installing, make sure to rename `config_EXAMPLE.py` to `config.py` after configuring your settings.
 
 Then, to run the scrape and send the results to your configured email:
 ```commandline
-git clone https://github.com/Bay40k/ksl_automated_scraper
-cd ksl_automated_scraper
 python automated_scrape_email
 ```
 Or, if you have configured Discord settings:
