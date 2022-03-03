@@ -97,8 +97,8 @@ async def get_search_results(
         url_string += f"/priceFrom/{price_from}"
     if price_to:
         url_string += f"/priceTo/{price_to}"
-    if page and page > 0:
-        url_string += f"/page/{page + 1}"
+    if page and page > 0 and page != 1:
+        url_string += f"/page/{page - 1}"
     if (
         PROXY_USERNAME != ""
         and PROXY_PASSWORD != ""
