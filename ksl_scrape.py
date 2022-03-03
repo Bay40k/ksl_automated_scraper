@@ -34,14 +34,12 @@ async def has_link_been_sent(link_to_result: str) -> bool:
             f"SELECT link from links WHERE link='{link_to_result}'"
         ) as cursor:
             result = await cursor.fetchone()
-            if not result:
-                await db.execute(
-                    f"INSERT INTO links(link) VALUES ('{link_to_result}');"
-                )
-                await db.commit()
-                print(f"Added link '{link_to_result}' to db '{ALREADY_SENT_DB}'")
-                return False
-            return True
+            if result is not None:
+                return True
+            await db.execute(f"INSERT INTO links(link) VALUES ('{link_to_result}');")
+            await db.commit()
+            print(f"Added link '{link_to_result}' to db '{ALREADY_SENT_DB}'")
+            return False
 
 
 @dataclass
