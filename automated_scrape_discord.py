@@ -38,17 +38,6 @@ async def send_message(user_id: str, message_text: str):
     await user_dm.send(message_text)
 
 
-@client.event
-async def on_ready():
-    print(f"We have logged in as {client.user}")
-
-
-@client.event
-async def on_message(message):
-    if message.author == client.user:
-        return
-
-
 async def main():
     await client.login(TOKEN)
     await do_scrape()
