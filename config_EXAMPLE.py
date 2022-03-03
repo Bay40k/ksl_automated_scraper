@@ -23,4 +23,8 @@ config_options = {
     "proxy":
     # Optional proxy settings to use for the requests
     {"username": "", "password": "", "url": "", "port": 0},
+    "database": {
+        # Path to database, absolute path needed or else cron won't work
+        "db_location": "already_sent.db",
+    },
 }

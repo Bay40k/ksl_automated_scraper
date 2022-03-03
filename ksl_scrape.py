@@ -14,7 +14,7 @@ USER_AGENT = (
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:97.0) Gecko/20100101 Firefox/97.0"
 )
 BASE_URL = "https://classifieds.ksl.com"
-ALREADY_SENT_DB = "already_sent.db"
+ALREADY_SENT_DB = config_options["database"]["db_location"]
 
 PROXY_USERNAME = config_options["proxy"]["username"]
 PROXY_PASSWORD = config_options["proxy"]["password"]
