@@ -16,7 +16,7 @@ TOKEN = config_options["discord"]["discord_token"]
 USER_ID = config_options["discord"]["discord_user_id"]
 
 
-async def do_scrape():
+async def do_scrape() -> str:
     search_results_html = await ksl_scrape.get_search_results(
         KEYWORD, PRICE_FROM, PRICE_TO
     )
@@ -29,7 +29,7 @@ async def do_scrape():
     )
     print(search_results_string)
     subject = f"New KSL Search Results for '{KEYWORD}' | {datetime.now()}"
-    await send_message(USER_ID, f"{subject}\n\n{search_results_string}"[:2000])
+    return f"{subject}\n\n{search_results_string}"
 
 
 async def send_message(user_id: str, message_text: str):
@@ -40,7 +40,8 @@ async def send_message(user_id: str, message_text: str):
 
 async def main():
     await client.login(TOKEN)
-    await do_scrape()
+    scraped_data = await do_scrape()
+    await send_message(USER_ID, scraped_data[:2000])
     await client.close()
 
 
