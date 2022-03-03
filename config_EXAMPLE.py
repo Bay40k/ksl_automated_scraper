@@ -20,4 +20,7 @@ config_options = {
         # Your Discord user ID (for sending the notification)
         "discord_user_id": 0,
     },
+    "proxy":
+    # Optional proxy settings to use for the requests
+    {"username": "", "password": "", "url": "", "port": 0},
 }

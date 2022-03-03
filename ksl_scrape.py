@@ -8,11 +8,18 @@ import bs4.element
 import requests
 from bs4 import BeautifulSoup
 
+from config import config_options
+
 USER_AGENT = (
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:97.0) Gecko/20100101 Firefox/97.0"
 )
 BASE_URL = "https://classifieds.ksl.com"
 ALREADY_SENT_DB = "already_sent.db"
+
+PROXY_USERNAME = config_options["proxy"]["username"]
+PROXY_PASSWORD = config_options["proxy"]["password"]
+PROXY_URL = config_options["proxy"]["url"]
+PROXY_PORT = config_options["proxy"]["port"]
 
 
 async def has_link_been_sent(link_to_result: str) -> bool:
@@ -92,7 +99,21 @@ async def get_search_results(
         url_string += f"/priceTo/{price_to}"
     if page and page > 0:
         url_string += f"/page/{page + 1}"
-    my_request = requests.get(url_string, headers=headers)
+    if (
+        PROXY_USERNAME != ""
+        and PROXY_PASSWORD != ""
+        and PROXY_URL != ""
+        and PROXY_PORT != 0
+    ):
+        print(f"Using proxy '{PROXY_URL}:{PROXY_PORT}'...")
+        prox = f"socks5://{PROXY_USERNAME}:{PROXY_PASSWORD}@{PROXY_URL}:{PROXY_PORT}"
+    else:
+        prox = None
+    with requests.Session() as r:
+        if prox:
+            r.proxies["http"] = prox
+            r.proxies["https"] = prox
+        my_request = r.get(url_string, headers=headers)
     return my_request.text
 
 
