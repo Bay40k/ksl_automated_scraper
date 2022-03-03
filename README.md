@@ -10,8 +10,10 @@ This only works on the Classifieds section. For https://cars.ksl.com, see: [ksl_
 ### Dependencies:
 - BeautifulSoup4
 - Requests
-- PyCord (discord2)
 - aiosqlite
+
+#### Optional
+- PyCord (discord2)
 
 ## Usage
 ```
