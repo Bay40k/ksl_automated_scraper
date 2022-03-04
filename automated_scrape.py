@@ -6,11 +6,13 @@ from config import config_options
 KEYWORD = config_options["settings"]["keyword"]
 PRICE_FROM = config_options["settings"]["price_from"]
 PRICE_TO = config_options["settings"]["price_to"]
+ZIP_CODE = config_options["settings"]["zip_code"]
+MILES_RADIUS = config_options["settings"]["miles_radius"]
 
 
 async def do_scrape() -> str:
     search_results_html = await ksl_scrape.get_search_results(
-        KEYWORD, PRICE_FROM, PRICE_TO
+        KEYWORD, PRICE_FROM, PRICE_TO, ZIP_CODE, MILES_RADIUS
     )
     search_results = await ksl_scrape.parse_search_results(search_results_html)
     if not search_results:

@@ -4,6 +4,10 @@ config_options = {
         "keyword": "ps5",
         "price_from": 450,
         "price_to": 600,
+        # Integer, optional zip code for miles radius
+        "zip_code": None,
+        # Integer, miles radius for zip code, will default to 0 if None and zip_code is not None
+        "miles_radius": None,
     },
     "email": {
         # To use Gmail, generate an App Password: https://support.google.com/accounts/answer/185833

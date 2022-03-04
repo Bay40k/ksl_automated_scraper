@@ -75,6 +75,8 @@ async def get_search_results(
     keyword: str,
     price_from: int | None = None,
     price_to: int | None = None,
+    zip_code: int | None = None,
+    miles_radius: int | None = None,
     page: int | None = None,
 ) -> str:
     """
@@ -83,20 +85,38 @@ async def get_search_results(
     :param keyword: Keyword to search for
     :param price_from: Lower bound of price
     :param price_to: Upper bound of price
+    :param zip_code: Optional zip code for search results radius
+    :param miles_radius: Miles radius around defined zip code
     :param page: Page of search results to retrieve
     :return: String containing the HTML page of KSL classifieds search results
     """
+
     headers = {
         "Accept": "text/html",
         "User-Agent": USER_AGENT,
     }
     url_string = f"{BASE_URL}/search/keyword/{keyword}"
-    if price_from:
+
+    if miles_radius is not None and miles_radius not in [0, 10, 25, 50, 100, 150, 200]:
+        if miles_radius > 200:
+            miles_radius = 10000
+        else:
+            miles_radius = None
+
+    if zip_code is not None:
+        if miles_radius is None:
+            miles_radius = 0
+        url_string += f"/zip/{zip_code}/miles/{miles_radius}"
+
+    if price_from is not None:
         url_string += f"/priceFrom/{price_from}"
-    if price_to:
+
+    if price_to is not None:
         url_string += f"/priceTo/{price_to}"
-    if page and page > 0 and page != 1:
+
+    if page is not None and page > 0 and page != 1:
         url_string += f"/page/{page - 1}"
+
     if (
         PROXY_USERNAME != ""
         and PROXY_PASSWORD != ""
@@ -111,6 +131,7 @@ async def get_search_results(
         if prox:
             r.proxies["http"] = prox
             r.proxies["https"] = prox
+        print(f"Getting URL: '{url_string}'")
         my_request = r.get(url_string, headers=headers)
     return my_request.text
 
