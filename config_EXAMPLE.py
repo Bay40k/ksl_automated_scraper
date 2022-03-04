@@ -25,14 +25,14 @@ config_options = {
         "discord_user_id": 0,
     },
     "proxy": {
-        # Optional proxy settings to use for the requests
+        # Optional SOCKS5 proxy settings to use for the requests
         "username": "",
         "password": "",
         "url": "",
         "port": 0,
     },
     "database": {
-        # Path to database, absolute path needed or else cron won't work
+        # Path to already-sent-links database, absolute path needed or else cron won't work
         "db_location": "already_sent.db",
     },
 }
