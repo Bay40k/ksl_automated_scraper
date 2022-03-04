@@ -17,7 +17,7 @@ async def send_message(user_id: str, message_text: str):
     await user_dm.send(message_text)
 
 
-async def chunks(string_to_chunk: str, chunk_length):
+async def chunks(string_to_chunk: str, chunk_length: int) -> str:
     """Produce `chunk_length`-character chunks from `string_to_chunk`."""
     for start in range(0, len(string_to_chunk), chunk_length):
         yield string_to_chunk[start : start + chunk_length]
