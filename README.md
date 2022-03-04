@@ -33,7 +33,7 @@ python automated_scrape_discord
 ```
 
 ## Example Output
-![censored_example_small](https://user-images.githubusercontent.com/8551516/156336122-a68c2b10-013f-4d7a-b2fb-6af9096079a5.jpg)
+![censored_example2](https://user-images.githubusercontent.com/8551516/156689422-f17a4e95-12ed-4d1f-9706-deb7956791e8.jpg)
 
 
 ## Discord
