@@ -18,9 +18,12 @@ async def do_scrape() -> str:
     if not search_results:
         print("No new results were found.")
         return None
-    search_results_string = "\n\n=========================\n\n".join(
+    search_results_string = "\n=========================\n".join(
         [f"{result.link}\n{result.text}" for result in search_results]
     )
+    search_results_string = search_results_string.replace(
+        "\n\n", "\n"
+    )  # Remove redundant newlines
     print(search_results_string)
     subject = f"New KSL Search Results for '{KEYWORD}' | {datetime.now()}"
-    return f"{subject}\n\n{search_results_string}"
+    return f"{subject}\n{search_results_string}"

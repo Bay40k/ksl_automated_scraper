@@ -17,12 +17,22 @@ async def send_message(user_id: str, message_text: str):
     await user_dm.send(message_text)
 
 
+async def chunks(string_to_chunk: str, chunk_length):
+    """Produce `chunk_length`-character chunks from `string_to_chunk`."""
+    for start in range(0, len(string_to_chunk), chunk_length):
+        yield string_to_chunk[start : start + chunk_length]
+
+
 async def main():
     scraped_data = await do_scrape()
     if not scraped_data:
         return None
+    scraped_data_chunks = chunks(
+        scraped_data, 2000
+    )  # Split into 2,000 character chunks (Discord char limit)
     await client.login(TOKEN)
-    await send_message(USER_ID, scraped_data[:2000])
+    async for chunk in scraped_data_chunks:
+        await send_message(USER_ID, chunk)
     await client.close()
 
 
