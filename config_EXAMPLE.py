@@ -7,6 +7,7 @@ config_options = {
         # Integer, optional zip code for miles radius
         "zip_code": None,
         # Integer, miles radius for zip code, will default to 0 if None and zip_code is not None
+        # Will also default to 0 if value not in: [0, 10, 25, 50, 100, 150, 200], or 10000 if value over 200
         "miles_radius": None,
     },
     "email": {
