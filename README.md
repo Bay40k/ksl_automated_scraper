@@ -25,11 +25,11 @@ After installing, make sure to rename `config_EXAMPLE.py` to `config.py` after c
 
 Then, to run the scrape and send the results to your configured email:
 ```commandline
-python automated_scrape_email
+python automated_scrape_email.py
 ```
 Or, if you have configured Discord settings:
 ```commandline
-python automated_scrape_discord
+python automated_scrape_discord.py
 ```
 
 ## Example Output
@@ -44,7 +44,7 @@ https://docs.pycord.dev/en/master/discord.html
 
 3. Then, copy your bot's token and *your account's* [User ID](https://support.discord.com/hc/en-us/articles/206346498-Where-can-I-find-my-User-Server-Message-ID-) to `config.py`
 
-4. Simply run/schedule `python automated_scrape_discord`.
+4. Simply run/schedule `python automated_scrape_discord.py`.
 
 ## Scheduling
 
