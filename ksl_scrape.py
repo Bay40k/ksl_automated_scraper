@@ -145,7 +145,7 @@ async def parse_search_results(
 
     :param search_results_html: Raw HTML string
     :param only_unsent: Bool indicating whether to only return unsent search results
-    :return: List of of `KSLSearchResult` objects
+    :return: List of `KSLSearchResult` objects
     """
     soup = BeautifulSoup(search_results_html, "html.parser")
     all_listings_tags = soup.find_all(class_="listing-item featured")
