@@ -25,6 +25,7 @@ PROXY_PORT = config_options["proxy"]["port"]
 async def has_link_been_sent(link_to_result: str) -> bool:
     """
     Indicates whether the specified link exists in DB, and therefore if that listing has already been sent
+    Also adds links that haven't been sent to `ALREADY_SENT_DB`
 
     :param link_to_result: link to KSL search result
     :return: Boolean indicating whether the result has already been sent or not
