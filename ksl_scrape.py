@@ -142,7 +142,7 @@ async def parse_search_results(search_results_html: str) -> List[KSLSearchResult
     Retrieves list of KSLSearchResult objects, from raw HTML search results.
 
     :param search_results_html: Raw HTML string
-    :return: List of KSLSearchResult objects
+    :return: List of unsent search results, in the form of `KSLSearchResult` objects
     """
     soup = BeautifulSoup(search_results_html, "html.parser")
     all_listings_tags = soup.find_all(class_="listing-item featured")
