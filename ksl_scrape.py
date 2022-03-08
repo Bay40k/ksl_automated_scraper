@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import logging
+import os
 import sys
 from dataclasses import dataclass
 from typing import List
@@ -31,7 +32,9 @@ async def enable_logging():
         level=logging.INFO,
         format="%(asctime)s | %(levelname)s | %(filename)s | %(funcName)s : %(message)s",
         handlers=[
-            logging.FileHandler(str(Path("./log.txt").resolve()), mode="a"),
+            logging.FileHandler(
+                str(Path(os.path.dirname(__file__), "log.txt")), mode="a"
+            ),
             logging.StreamHandler(sys.stdout),
         ],
     )
