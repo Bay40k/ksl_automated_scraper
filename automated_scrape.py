@@ -1,6 +1,8 @@
+import logging
 from datetime import datetime
 
 import ksl_scrape
+from ksl_scrape import enable_logging
 from config import config_options
 
 KEYWORD = config_options["settings"]["keyword"]
@@ -11,12 +13,13 @@ MILES_RADIUS = config_options["settings"]["miles_radius"]
 
 
 async def do_scrape() -> str:
+    await enable_logging()
     search_results_html = await ksl_scrape.get_search_results(
         KEYWORD, PRICE_FROM, PRICE_TO, ZIP_CODE, MILES_RADIUS
     )
     search_results = await ksl_scrape.parse_search_results(search_results_html)
     if not search_results:
-        print("No new results were found.")
+        logging.info("No *new* results were found.")
         return None
     search_results_string = "\n=========================\n".join(
         [f"{result.link}\n{result.text}" for result in search_results]
@@ -24,6 +27,6 @@ async def do_scrape() -> str:
     search_results_string = search_results_string.replace(
         "\n\n", "\n"
     )  # Remove redundant newlines
-    print(search_results_string)
+    logging.info(search_results_string)
     subject = f"New KSL Search Results for '{KEYWORD}' | {datetime.now()}"
     return f"{subject}\n{search_results_string}"

@@ -1,7 +1,10 @@
 from __future__ import annotations
 
+import logging
+import sys
 from dataclasses import dataclass
 from typing import List
+from pathlib import Path
 
 import aiosqlite
 import bs4.element
@@ -22,6 +25,18 @@ PROXY_URL = config_options["proxy"]["url"]
 PROXY_PORT = config_options["proxy"]["port"]
 
 
+async def enable_logging():
+    # Create and configure logger
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s | %(levelname)s | %(filename)s | %(funcName)s : %(message)s",
+        handlers=[
+            logging.FileHandler(str(Path("./log.txt").resolve()), mode="a"),
+            logging.StreamHandler(sys.stdout),
+        ],
+    )
+
+
 async def has_link_been_sent(link_to_result: str) -> bool:
     """
     Indicates whether the specified link exists in DB, and therefore if that listing has already been sent
@@ -39,7 +54,7 @@ async def has_link_been_sent(link_to_result: str) -> bool:
                 return True
             await db.execute(f"INSERT INTO links(link) VALUES ('{link_to_result}');")
             await db.commit()
-            print(f"Added link '{link_to_result}' to db '{ALREADY_SENT_DB}'")
+            logging.info(f"Added link '{link_to_result}' to db '{ALREADY_SENT_DB}'")
             return False
 
 
@@ -124,7 +139,7 @@ async def get_search_results(
         and PROXY_URL != ""
         and PROXY_PORT != 0
     ):
-        print(f"Using proxy '{PROXY_URL}:{PROXY_PORT}'...")
+        logging.info(f"Using proxy '{PROXY_URL}:{PROXY_PORT}'...")
         prox = f"socks5://{PROXY_USERNAME}:{PROXY_PASSWORD}@{PROXY_URL}:{PROXY_PORT}"
     else:
         prox = None
@@ -132,8 +147,14 @@ async def get_search_results(
         if prox:
             r.proxies["http"] = prox
             r.proxies["https"] = prox
-        print(f"Getting URL: '{url_string}'")
+        logging.info(f"Getting URL: '{url_string}'")
         my_request = r.get(url_string, headers=headers)
+    status_code_string = f"HTTP Status code: {my_request.status_code}"
+    if my_request.status_code == 200:
+        logging.info(status_code_string)
+    else:
+        logging.error(status_code_string)
+        logging.error(f"Response text: {my_request.text}")
     return my_request.text
 
 
@@ -150,8 +171,17 @@ async def parse_search_results(
     soup = BeautifulSoup(search_results_html, "html.parser")
     all_listings_tags = soup.find_all(class_="listing-item featured")
     all_listings = [KSLSearchResult(listing) for listing in all_listings_tags]
-    if not only_unsent:
+
+    if not all_listings:
+        logging.info("No results found.")
+        page_text = soup.text.strip()
+        while "\n\n" in page_text:
+            page_text = page_text.replace("\n\n", "\n")
+        logging.info(f"HTML snippet: {ascii(page_text)[:500]}")
+
+    if not only_unsent or not all_listings:
         return all_listings
+
     unsent_listings = []
     for listing in all_listings:
         is_listing_sent = await has_link_been_sent(listing.link)
