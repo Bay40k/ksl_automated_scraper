@@ -50,7 +50,7 @@ async def has_link_been_sent(link_to_result: str) -> bool:
     """
     async with aiosqlite.connect(ALREADY_SENT_DB) as db:
         async with db.execute(
-            f"SELECT link from links WHERE link='{link_to_result}'"
+            f"SELECT link FROM links WHERE link='{link_to_result}'"
         ) as cursor:
             result = await cursor.fetchone()
             if result is not None:
