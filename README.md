@@ -58,3 +58,7 @@ Or, for Discord (if configured):
 ```
 
 Or create a scheduled task in Windows: https://www.askpython.com/python/examples/execute-python-windows-task-scheduler
+
+## Embedding
+
+View [embedding_examples.ipynb](embedding_examples.ipynb) for examples of how to embed this script.
