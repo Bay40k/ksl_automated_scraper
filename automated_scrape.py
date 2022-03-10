@@ -12,12 +12,20 @@ ZIP_CODE = config_options["settings"]["zip_code"]
 MILES_RADIUS = config_options["settings"]["miles_radius"]
 
 
-async def do_scrape() -> str:
+async def do_scrape(only_unsent: bool = True) -> str:
+    """
+    Returns scraped data using `config_options` from `config.py`.
+
+    :param only_unsent: Bool whether to return only unsent listings
+    :return: String containing scraped data, separated by equals signs.
+    """
     await enable_logging()
     search_results_html = await ksl_scrape.get_search_results(
         KEYWORD, PRICE_FROM, PRICE_TO, ZIP_CODE, MILES_RADIUS
     )
-    search_results = await ksl_scrape.parse_search_results(search_results_html)
+    search_results = await ksl_scrape.parse_search_results(
+        search_results_html, only_unsent=only_unsent
+    )
     if not search_results:
         logging.info("No *new* results were found.")
         return None
